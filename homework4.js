@@ -1,11 +1,4 @@
-/*
-  Program name: homework4.js
-  Author: Yazan abdalla
-  Date created: April 18, 2026
-  Description: Comprehensive logic for Homework 4.
-               Includes Fetch API for states, Cookie tracking, 
-               Local Storage persistence, and Advanced Validation.
-*/
+
 
 // Initialize Homework 4 on page load
 window.onload = function() {
