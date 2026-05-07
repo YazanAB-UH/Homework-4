@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<!--
+  Program name: homework4.html
+  Author: Yazan abdalla
+  Date created: April 18, 2026
+  Description: MIS3371 Homework 4 - Persistent Patient Registration Form.
+               Features Fetch API, iFrames, Cookies, and Local Storage.
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MediCare Plus Patient Registration Form - Homework 4. Persistent state and modern UI.">
+    <title>NovaCare Clinic | Patient Registration – HW4</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- External CSS -->
+    <link rel="stylesheet" href="style4.css">
+</head>
+<body>
+    <div id="page-wrapper">
+        <header id="header-banner">
+            <div class="banner-content">
+                <div class="logo-area">
+                    <img src="logo.png" alt="MediCare Plus Logo" id="main-logo">
+                    <div>
+                        <h1 class="company-name">NovaCare Clinic</h1>
+                        <p class="company-tagline">Excellence in Care, Every Patient, Every Day</p>
+                    </div>
+                </div>
+                <div id="greeting-container">
+                    <div class="hw-badge" style="position: static; margin-bottom: 5px; display: inline-block;">Homework 4</div>
+                    <span id="greeting-msg" style="font-weight: 700; font-size: 1.2rem; display: block;">Welcome New user</span>
+                    <div id="not-user-container" style="display:none; font-size:0.8em; margin-top:5px; color:#a5b4fc;">
+                        <input type="checkbox" id="not-user-check">
+                        <label for="not-user-check">Not <span id="cookie-name-span"></span>? Click here to start as NEW USER</label>
+                    </div>
+                </div>
+                <div id="date-display" class="header-date"></div>
+            </div>
+        </header>
+
+        <main>
+            <section class="form-card">
+                <h2>Patient Registration Form</h2>
+                <p class="intro-text">Please provide your details below. Fields marked with <span class="required">*</span> are mandatory.</p>
+                
+                <!-- iFrame Section (Requirement) -->
+                <div class="iframe-container" style="margin-bottom: 2rem; border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
+                    <div style="background: #f1f5f9; padding: 0.5rem 1rem; font-weight: 700; font-size: 0.9rem; border-bottom: 1px solid var(--border);">Medical Resources (iFrame)</div>
+                    <iframe src="https://en.wikipedia.org/wiki/Medicine" title="Medical Information" style="width: 100%; height: 300px; border: none;"></iframe>
+                </div>
+
+                <form id="patient-form" action="thankyou.html" method="GET" onsubmit="return handleFinalSubmit(event)">
+                    
+                    <div style="margin-bottom: 2rem; background: #eef2ff; padding: 1rem; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="remember_me" name="remember_me" checked>
+                        <label for="remember_me" style="font-weight: 600; color: #4338ca;">Remember Me? <small>(Saves your name and data for next time)</small></label>
+                    </div>
+                    
+                    <fieldset>
+                        <legend>1. Identification</legend>
+                        <table class="form-table">
+                            <tr>
+                                <td><label for="fname">First Name <span class="required">*</span></label></td>
+                                <td colspan="3">
+                                    <input type="text" id="fname" name="fname" maxlength="30" required 
+                                           prompt="Enter your legal first name" 
+                                           title="1 to 30 characters. Letters, apostrophes, and dashes only."
+                                           class="save-local"
+                                           oninput="validateField('fname')" onblur="validateField('fname')">
+                                    <div id="fname-error" class="error-msg"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label for="mi">Middle Initial</label></td>
+                                <td>
+                                    <input type="text" id="mi" name="mi" maxlength="1" class="input-xs save-local"
+                                           prompt="Optional: Enter middle initial"
+                                           title="1 character max, letters only, no numbers."
+                                           oninput="validateField('mi')" onblur="validateField('mi')">
+                                    <div id="mi-error" class="error-msg"></div>
+                                </td>
+                                <td><label for="lname">Last Name <span class="required">*</span></label></td>
+                                <td>
+                                    <input type="text" id="lname" name="lname" maxlength="30" required
+                                           prompt="Enter your legal last name"
+                                           title="1 to 30 characters. Letters, apostrophes, and dashes only."
+                                           class="save-local"
+                                           oninput="validateField('lname')" onblur="validateField('lname')">
+                                    <div id="lname-error" class="error-msg"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label>Date of Birth <span class="required">*</span></label></td>
+                                <td colspan="3">
+                                    <div class="dob-group">
+                                        <input type="text" id="dob-month" name="dob-month" maxlength="2" placeholder="MM" class="input-xs save-local"
+                                               prompt="Month (MM)" title="Birth month (01-12)" required
+                                               oninput="validateDOB()" onblur="validateDOB()">
+                                        <span>/</span>
+                                        <input type="text" id="dob-day" name="dob-day" maxlength="2" placeholder="DD" class="input-xs save-local"
+                                               prompt="Day (DD)" title="Birth day (01-31)" required
+                                               oninput="validateDOB()" onblur="validateDOB()">
+                                        <span>/</span>
+                                        <input type="text" id="dob-year" name="dob-year" maxlength="4" placeholder="YYYY" class="input-sm save-local"
+                                               prompt="Year (YYYY)" title="Birth year (e.g. 1990)" required
+                                               oninput="validateDOB()" onblur="validateDOB()">
+                                    </div>
+                                    <div id="dob-error" class="error-msg"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label for="ssn">Social Security / ID <span class="required">*</span></label></td>
+                                <td colspan="3">
+                                    <input type="password" id="ssn" name="ssn" maxlength="11" required
+                                           prompt="Enter 9 digits - will auto-format"
+                                           title="9-digit identification number. Format: XXX-XX-XXXX. Numbers only."
+                                           oninput="formatSSN(this); validateField('ssn');" onblur="validateField('ssn')">
+                                    <div id="ssn-error" class="error-msg"></div>
+                                    <small class="hint">Use a fake 9-digit number for testing.</small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label>Gender <span class="required">*</span></label></td>
+                                <td colspan="3">
+                                    <div class="radio-group" title="Select your gender">
+                                        <label><input type="radio" name="gender" value="Male" required onchange="validateField('gender')" class="save-local"> Male</label>
+                                        <label><input type="radio" name="gender" value="Female" onchange="validateField('gender')" class="save-local"> Female</label>
+                                        <label><input type="radio" name="gender" value="Other" onchange="validateField('gender')" class="save-local"> Other</label>
+                                    </div>
+                                    <div id="gender-error" class="error-msg"></div>
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>2. Contact & Address</legend>
+                        <table class="form-table">
+                            <tr>
+                                <td><label for="email">Email address <span class="required">*</span></label></td>
+                                <td colspan="3">
+                                    <input type="email" id="email" name="email" required
+                                           prompt="Primary email address"
+                                           title="Must be a valid format: name@domain.tld"
+                                           class="save-local"
+                                           oninput="validateField('email')" onblur="validateField('email')">
+                                    <div id="email-error" class="error-msg"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label for="addr1">Address Line 1 <span class="required">*</span></label></td>
+                                <td colspan="3">
+                                    <input type="text" id="addr1" name="addr1" minlength="2" maxlength="30" required
+                                           prompt="Street and number"
+                                           title="Required. 2 to 30 characters."
+                                           class="save-local"
+                                           oninput="validateField('addr1')" onblur="validateField('addr1')">
+                                    <div id="addr1-error" class="error-msg"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label for="addr2">Address Line 2</label></td>
+                                <td colspan="3">
+                                    <input type="text" id="addr2" name="addr2" maxlength="30"
+                                           prompt="Apartment, suite, or unit number"
+                                           title="Optional. 2 to 30 characters if entered."
+                                           class="save-local"
+                                           oninput="validateField('addr2')" onblur="validateField('addr2')">
+                                    <div id="addr2-error" class="error-msg"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label for="city">City <span class="required">*</span></label></td>
+                                <td>
+                                    <input type="text" id="city" name="city" required
+                                           prompt="Residential city"
+                                           title="Required. 2 to 30 characters."
+                                           class="save-local"
+                                           oninput="validateField('city')" onblur="validateField('city')">
+                                    <div id="city-error" class="error-msg"></div>
+                                </td>
+                                <td><label for="state">State <span class="required">*</span></label></td>
+                                <td>
+                                    <select id="state" name="state" required class="save-local"
+                                            prompt="Select your state"
+                                            title="State of residence (All 50 states + DC and PR available)."
+                                            onchange="validateField('state')">
+                                        <option value="">Loading States...</option>
+                                    </select>
+                                    <div id="state-error" class="error-msg"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label for="zip">Zip Code <span class="required">*</span></label></td>
+                                <td colspan="3">
+                                    <input type="text" id="zip" name="zip" maxlength="5" required
+                                           prompt="5-digit zip code"
+                                           title="Required. Must be exactly 5 digits."
+                                           class="save-local"
+                                           oninput="validateField('zip')" onblur="validateField('zip')">
+                                    <div id="zip-error" class="error-msg"></div>
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>3. Medical History & Preferences</legend>
+                        <table class="form-table">
+                            <tr>
+                                <td><label>Previous Illnesses:</label></td>
+                                <td colspan="3">
+                                    <div class="checkbox-group">
+                                        <label><input type="checkbox" name="illness" value="pox" class="save-local"> Chicken Pox</label>
+                                        <label><input type="checkbox" name="illness" value="measles" class="save-local"> Measles</label>
+                                        <label><input type="checkbox" name="illness" value="covid19" class="save-local"> Covid-19</label>
+                                        <label><input type="checkbox" name="illness" value="mumps" class="save-local"> Mumps</label>
+                                        <label><input type="checkbox" name="illness" value="flu" class="save-local"> Seasonal Flu</label>
+                                    </div>
+                                    <small>Check all that apply.</small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label>Vaccination Status <span class="required">*</span></label></td>
+                                <td colspan="3">
+                                    <div class="radio-group" title="Select your vaccination status">
+                                        <label><input type="radio" name="vaccinated" value="yes" required onchange="validateField('vaccinated')" class="save-local"> Yes</label>
+                                        <label><input type="radio" name="vaccinated" value="no" onchange="validateField('vaccinated')" class="save-local"> No</label>
+                                        <label><input type="radio" name="vaccinated" value="unsure" onchange="validateField('vaccinated')" class="save-local"> Unsure</label>
+                                    </div>
+                                    <div id="vaccinated-error" class="error-msg"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label>Housing Status <span class="required">*</span></label></td>
+                                <td colspan="3">
+                                    <div class="radio-group" title="Indicate whether you own or rent">
+                                        <label><input type="radio" name="tenure" value="own" required onchange="validateField('tenure')" class="save-local"> Own</label>
+                                        <label><input type="radio" name="tenure" value="rent" onchange="validateField('tenure')" class="save-local"> Rent</label>
+                                        <label><input type="radio" name="tenure" value="other" onchange="validateField('tenure')" class="save-local"> Other</label>
+                                    </div>
+                                    <div id="tenure-error" class="error-msg"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label for="salary">Desired Salary Range</label></td>
+                                <td colspan="3">
+                                    <div class="slider-container">
+                                        <input type="range" id="salary" name="salary" min="20000" max="200000" step="5000" value="60000"
+                                               class="save-local"
+                                               oninput="updateSliderLabel(this.value)">
+                                        <span id="salary-value">$60,000 / year</span>
+                                    </div>
+                                    <small>Slide to indicate your expected salary range.</small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top;"><label for="comments">Health Summary</label></td>
+                                <td colspan="3">
+                                    <textarea id="comments" name="comments" rows="3" 
+                                              prompt="Enter any relevant medical notes"
+                                              title="Optional. Describe your general health status."
+                                              class="save-local"
+                                              oninput="validateField('comments')"></textarea>
+                                    <div id="comments-error" class="error-msg"></div>
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>4. Account Security</legend>
+                        <table class="form-table">
+                            <tr>
+                                <td><label for="userid">User ID <span class="required">*</span></label></td>
+                                <td colspan="3">
+                                    <input type="text" id="userid" name="userid" minlength="5" maxlength="20" required
+                                           prompt="Desired login username"
+                                           title="5-20 characters. Cannot start with a number. No special chars except - and _."
+                                           class="save-local"
+                                           oninput="validateField('userid')" onblur="validateField('userid')">
+                                    <div id="userid-error" class="error-msg"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label for="password">Password <span class="required">*</span></label></td>
+                                <td colspan="3">
+                                    <input type="password" id="password" name="password" required
+                                           prompt="At least 8 characters"
+                                           title="Must have 8+ chars, 1 uppercase, 1 lowercase, and 1 digit. Cannot be User ID."
+                                           oninput="validateField('password')" onblur="validateField('password')">
+                                    <div id="password-error" class="error-msg"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label for="password_confirm">Confirm Password <span class="required">*</span></label></td>
+                                <td colspan="3">
+                                    <input type="password" id="password_confirm" name="password_confirm" required
+                                           prompt="Re-enter your password"
+                                           title="Must match the password field above exactly."
+                                           oninput="validateField('password_confirm')" onblur="validateField('password_confirm')">
+                                    <div id="password_confirm-error" class="error-msg"></div>
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+
+                    <div class="actions">
+                        <button type="button" id="validate-btn" onclick="performFullValidation()">Validate My Form</button>
+                        <button type="submit" id="submit-btn" style="display: none;">Submit Registration</button>
+                        <button type="reset" onclick="resetForm()">Reset</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+
+        <footer id="main-footer">
+            <div class="footer-info">
+                <p>&copy; 2026 NovaCare Clinic. All rights reserved.</p>
+                <p>1200 Healthcare Blvd, Suite 400 | Houston, TX 77030</p>
+                <p>Support: <a href="mailto:support@novacare.demo">support@novacare.demo</a></p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- External JavaScript -->
+    <script src="homework4.js"></script>
+</body>
+</html>
